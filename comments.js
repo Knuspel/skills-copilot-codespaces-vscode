@@ -1,67 +1,40 @@
-// create web server
-// create web server
+// Create web server with express
 const express = require('express');
 const app = express();
 const PORT = 3000;
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const comments = require('./comments.json');
-const fs = require('fs');
-const path = './comments.json';
 
-app.use(bodyParser.json());
-app.use(cookieParser());
+// Create a comments array
+const comments = [
+  {
+    username: 'Tammy',
+    comment: 'lol that is so funny!',
+    createdAt: '6/17/2020'
+  },
+  {
+    username: 'FishBoi',
+    comment: 'plz delete this post',
+    createdAt: '6/19/2020'
+  },
+  {
+    username: 'Haha',
+    comment: 'I love this post!',
+    createdAt: '6/20/2020'
+  }
+];
 
-// GET /comments
+// Create a route to get all comments
 app.get('/comments', (req, res) => {
   res.json(comments);
 });
 
-// POST /comments
-app.post('/comments', (req, res) => {
-  const newComment = req.body;
-  comments.push(newComment);
-
-  fs.writeFile(path, JSON.stringify(comments), err => {
-    if (err) {
-      res.status(500).send('Error saving new comment');
-    } else {
-      res.json(newComment);
-    }
-  });
+// Create a route to get a specific comment
+app.get('/comments/:username', (req, res) => {
+  const username = req.params.username;
+  const comment = comments.find(comment => comment.username === username);
+  res.json(comment);
 });
 
-// PUT /comments/:id
-app.put('/comments/:id', (req, res) => {
-  const id = req.params.id;
-  const updatedComment = req.body;
-
-  comments[id] = updatedComment;
-
-  fs.writeFile(path, JSON.stringify(comments), err => {
-    if (err) {
-      res.status(500).send('Error updating comment');
-    } else {
-      res.json(updatedComment);
-    }
-  });
-});
-
-// DELETE /comments/:id
-app.delete('/comments/:id', (req, res) => {
-  const id = req.params.id;
-
-  comments.splice(id, 1);
-
-  fs.writeFile(path, JSON.stringify(comments), err => {
-    if (err) {
-      res.status(500).send('Error deleting comment');
-    } else {
-      res.send('Comment deleted');
-    }
-  });
-});
-
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
